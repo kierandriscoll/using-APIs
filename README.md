@@ -1,5 +1,5 @@
 # Extracting data from APIs
-Application Programming Interfaces (API's) are a way of allowing a computer to request/query information from another computer or application. You can think of it as querying a remote database that is hosted on a website. 
+Application Programming Interfaces (API's) are a way of allowing your computer to request/query information from another computer or application. You can think of it as querying a remote database that is hosted on a website. 
 
 # What API's can i use
 There is a catalogue of government API's : https://www.api.gov.uk/#uk-government-apis including access to data from:  
@@ -24,12 +24,28 @@ https://api.uktradeinfo.com/RTS
 
 **Parameters** : These are options you will use to query the API, such as filtering (eg. Year=2020). Parameters will be different for each API.
 
+**JSON output** : API's will normally return data as JSON which is a structured text format. Eg:
+`{[{{"MonthId":200001,"FlowTypeId":1,"CommodityId":-990,"CountryId":959,"PortId":-1,"Value":148391144.0,"NetMass":null}]}`
+
 **Rate Limiting** : Some API's have restrictions on the number of requests and/or the number of items that can be returned per request.
 
 **Tokens (for access/authentication)** : Some API's require an access token (you may need to setup an account) to use them. Open Data/Governmnet  API's do not normally need tokens.
 
-**JSON output** : API's will normally return data as JSON which is a structured text format. Eg:
-`{[{{"MonthId":200001,"FlowTypeId":1,"CommodityId":-990,"CountryId":959,"PortId":-1,"Value":148391144.0,"NetMass":null}]}`
+
+# R & APIs
+To use an API in R you will need to the **{httr}** and **{jsonlite}** packages.
+
+{httr} handles the API request and response.  
+You just need to enter your query into the GET() function. Eg:  
+`
+myquery <- 'https://www.trade-tariff.service.gov.uk/api/v2/quotas/search?geographical_area_id=US&years=2020'
+
+result_json <- httr::GET(myquery) %>% 
+  httr::content(as = "text")`  
+  
+{jsonlite} can convert the results from JSON format to an R dataframe:  
+`result_df <-  jsonlite::fromJSON(result_json)`
+
 
 # API Documentation
 The type of requests you can make and the response you get is different for each API, so you will need to read its documentation to understand how to use it.  
@@ -51,16 +67,7 @@ https://api.uktradeinfo.com/OTS?MonthId gt 201901 & CountryId eq 959
 
 
 
-# Getting data from an API in R
-To get results from an API in R you will need to the **{httr}** and **{jsonlite}** packages.
 
-{httr} handles requests and repsosnes to an API.  
-You just need to enter your query into the GET() function. Eg:  
-`result_json <- httr::GET('https://www.trade-tariff.service.gov.uk/api/v2/quotas/search?geographical_area_id=US&years=2020') %>% 
-  httr::content(as = "text")`  
-  
-{jsonlite} can convert data from JSON format to a dataframe format:  
-`result_df <-  fromJSON(result_json)`
 
 ## Issues
 Some API's have complex data structures, such as nested data.
