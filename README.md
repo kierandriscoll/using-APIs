@@ -54,19 +54,20 @@ result_df <-  jsonlite::fromJSON(result_json) %>%
   data.frame()
 ```
 
-# API Documentation
-Every API will have a different set of endpoints, parameters and some operate slightly differently, so you need to read its documentation to understand how to use it. For example some API's accept conditional operators such as *= < > !=* but others only accept text versions, *eq lt gt ne*.  
-                                    
 # Issues
 Some API's return complex data structures, with nested values. You may need to add the *flatten* option when converting from JSON to resolve this.  
 '''r
 jsonlite::fromJSON(result_json, flatten = TRUE)
 '''
 
+# API Documentation
+Every API will have a different set of endpoints, parameters and some operate slightly differently, so you need to read its documentation to understand how to use it.   
+                                    
 # Queries in a browser
-You can enter queries directly in your browser and see the JSON ouptut, but you will need to write the full request manaully.
+You can enter API queries directly in your browser and see the JSON ouptut, but you will need to write the full request manaully.
 A full query might look something like :  
 `https://api.uktradeinfo.com/OTS?MonthId gt 201901 & CountryId eq 959`
 - This starts with the base URL and endpoint.
 - The query starts with a **?**
 - The parameters and conditions can then be specified with each one sepearted by **&**.
+Nb. Some API's accept conditional operators such as *= < > !=* but others only accept text versions, *eq lt gt ne*.
