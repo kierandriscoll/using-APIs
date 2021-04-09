@@ -56,9 +56,9 @@ result_df <-  jsonlite::fromJSON(result_json) %>%
 
 # Issues
 Some API's return complex data structures, with nested values. You may need to add the *flatten* option when converting from JSON to resolve this.  
-'''r
+```r
 jsonlite::fromJSON(result_json, flatten = TRUE)
-'''
+```
 
 # API Documentation
 Every API will have a different set of endpoints, parameters and some operate slightly differently, so you need to read its documentation to understand how to use it.   
