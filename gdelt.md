@@ -12,14 +12,18 @@ response <- httr::GET(endpoint,
                       query = c(list(query = 'Olympics',
                                      timespan = '12m',
                                      startdatetime = NULL,
-                                     enddatetime = NULL
-                                     mode = 'TimlineVol',
+                                     enddatetime = NULL,
+                                     mode = 'TimelineVol',
                                      maxrecords = 250, # GDELT Maximum 
                                      format = 'json')))
                                      
 # Parse the results
-json <- httr::content(r, "text")
-df <- jsonlite::fromJSON(json)
+cont <- httr::content(response, "text")
+json <- jsonlite::fromJSON(cont)
+
+# Convert list into dataframe
+names(json$timeline$data) <- json$timeline$series  
+df <- bind_rows(json$timeline$data, .id = "series")
 ```
 
 
