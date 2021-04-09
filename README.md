@@ -38,7 +38,6 @@ To use an API in R you will need to the **{httr}** and **{jsonlite}** packages.
 {httr} handles the API request and response.  
 You just need to enter your query into the GET() function. Eg:  
 `myquery <- 'https://www.trade-tariff.service.gov.uk/api/v2/quotas/search?geographical_area_id=US&years=2020'
-  
 result_json <- httr::GET(myquery) %>% 
   httr::content(as = "text")`  
   
