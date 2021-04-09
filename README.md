@@ -3,10 +3,10 @@ Application Programming Interfaces (API's) are a way of allowing your computer t
 
 # What API's can i use
 There is a catalogue of government API's : https://www.api.gov.uk/#uk-government-apis including access to data from:  
-Companies House  
-ONS (Statistics and Open Geography)  
-HMRC & DIT (Trade and tariffs)  
-TfL 
+- Companies House  
+- ONS (Statistics and Open Geography)  
+- HMRC & DIT (Trade and tariffs)  
+- TfL 
 
 Other organisation also have API's although these may be behind paywalls or require an account:  
 Trade : https://comtrade.un.org/data/dev/portal#subscription  
@@ -29,7 +29,7 @@ https://api.uktradeinfo.com/RTS
 
 **Rate Limiting** : Some API's have restrictions on the number of requests and/or the number of items that can be returned per request.
 
-**Tokens (for access/authentication)** : Some API's require an access token (you may need to setup an account) to use them. Open Data/Governmnet  API's do not normally need tokens.
+**Tokens (for access/authentication)** : Some API's require an access token (you may need to setup an account) to use them. Open Data/Government  API's do not normally need tokens.
 
 
 # R & APIs
@@ -37,9 +37,8 @@ To use an API in R you will need to the **{httr}** and **{jsonlite}** packages.
 
 {httr} handles the API request and response.  
 You just need to enter your query into the GET() function. Eg:  
-`
-myquery <- 'https://www.trade-tariff.service.gov.uk/api/v2/quotas/search?geographical_area_id=US&years=2020'
-
+`myquery <- 'https://www.trade-tariff.service.gov.uk/api/v2/quotas/search?geographical_area_id=US&years=2020'
+  
 result_json <- httr::GET(myquery) %>% 
   httr::content(as = "text")`  
   
