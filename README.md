@@ -36,28 +36,57 @@ https://api.uktradeinfo.com/RTS
 To use an API in R you will need to the **{httr}** and **{jsonlite}** packages.
 
 {httr} handles the API request and response with its GET() function.  
-You just need to specify the endpoint and the parameters you want to filter by.
-For example the following request returns HMRC data for exports to Germany in Dec 2020:  
+You need to specify the endpoint and a query that will filter results.
+For example the following request returns the number of news articles that mentioned the Olympics in the last 12 months:  
 ```r
-endpoint <- 'https://api.uktradeinfo.com/OTS'
+endpoint <- 'https://api.gdeltproject.org/api/v2/doc/doc'
 
-result_json <- httr::GET(endpoint,
-                         query = c(list(MonthId = '202012',
-                                        FlowTypeID = 1,
-                                        CountryId = 4))) %>%
+response <- httr::GET(endpoint,
+                      query = c(list(query = 'Olympics',
+                                     timespan = '12m',
+                                     mode = 'TimelineVol',
+                                     format = 'json'))) %>%
   httr::content(as = "text")
  ```  
   
 {jsonlite} can convert the results from JSON format to an R object:  
 ```r
-result_df <-  jsonlite::fromJSON(result_json) %>%
-  data.frame()
+result <-  jsonlite::fromJSON(response)
 ```
 
-# Issues
-Some API's return complex data structures, with nested values. You may need to add the *flatten* option when converting from JSON to resolve this.  
+# More complex queries
+The example above is the simplest type of query for an API. However it doesnt allow complex conditions such as < > OR NOT.
+
+Some API's use a system called OData which can allows you to do calculation and grouping however it is more complex to write a query
+
+## OData queries
+These types of query use *System Query Options* to define what is being requested. These start with a $ (eg. $filter, $apply ...) 
+A complex OData query could look like:
+`https://api.uktradeinfo.com/ots?$apply=filter(MonthId gt 202000 and MonthId lt 202099 and CountryId ne 959 and SuppressionIndex eq 0)/groupby((Commodity/Hs2Code, FlowTypeId), aggregate(Value with sum as SumValue))`
+
+If you just need to filter an OData API then *$filter=* must be included befor you specify the parameters. Also you must use text versions of operators *eq lt gt ne and* within the query instead of *= < > != &. For example:  
+`https://api.uktradeinfo.com/ots?$filter=MonthId gt 202000 and MonthId lt 202099 and CountryId ne 959 and SuppressionIndex eq 0`
+
+If you just want to carry a sequence of transformations (eg. filter then groupby) you need out need to use the $apply options and sepearte each tranformations with a /.
+`https://api.uktradeinfo.com/ots?$apply=filter(MonthId gt 202000 and CountryId eq 959)/groupby((CommodityId, FlowTypeId), aggregate(Value with sum as SumValue))`
+
+To use this in R you will need to write the query manually and construct it (Nb also that all balnak spaces must be repalced by %20):
 ```r
-jsonlite::fromJSON(result_json, flatten = TRUE)
+endpoint <- 'https://api.uktradeinfo.com/ots'
+
+response <- httr::GET(endpoint,
+                      query = '$filter=MonthId eq 202001') %>%
+  httr::content(as = "text")
+ ```  
+
+# Handling results
+If the API is relatively simpe it should return a dataframe, but API's may return more complex data structures that need more processing.  
+```r
+# If the results include nested values then you can flatten them:
+result <- jsonlite::fromJSON(result, flatten = TRUE)
+
+# If the result is a list object then you can convert to a dataframe:
+df <- bind_rows(result$timeline$data, .id = "series") 
 ```
 
 # API Documentation
