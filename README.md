@@ -67,7 +67,7 @@ df <- bind_rows(result$timeline$data, .id = "series")
 
 
 # Writing basic queries
-The query used above is the simplest type of query for an API. It is a string of parameter names and values sepearted by &'s (nb. there must not be an whitespace). 
+The query used above is the simplest type of query for an API. It is a string of parameter names and values separated by &'s (nb. there must not be any whitespace). 
 ```r
 query = "query=Olympics&timespan=12m&mode=TimelineVol&format=json"
 ```
@@ -88,17 +88,17 @@ The disadvantage of basic queries is that they dont allow complex conditions suc
 
 # Complex queries
 Some API's allow you to construct queries with complex conditions, or group data and perform calculations.    
-The HMRC trade API works with 'OData' which use *System Query Options* to define what is being requested.  
+The HMRC trade API works with [OData](https://www.odata.org/documentation/) which use *System Query Options* to define what is being requested.  
 
 A query starts with a $ (eg. $filter, $apply ...) 
-A complex OData query could look like:
+A complex OData query could look like:  
 `https://api.uktradeinfo.com/ots?$apply=filter(MonthId gt 202000 and MonthId lt 202099 and CountryId ne 959 and SuppressionIndex eq 0)/groupby((Commodity/Hs2Code, FlowTypeId), aggregate(Value with sum as SumValue))`
 
 If you just need to filter an OData API then *$filter=* must be included before you specify the parameters.  
 Also you must use text versions of operators *eq lt gt ne and* within the query instead of *= < > != &. For example:  
 `https://api.uktradeinfo.com/ots?$filter=MonthId gt 202000 and MonthId lt 202099 and CountryId ne 959 and SuppressionIndex eq 0`
 
-If you just want to carry a sequence of transformations (eg. filter then groupby) you need out need to use the $apply options and separate each tranformations with a forward slash.
+If you just want to carry a sequence of transformations (eg. filter then groupby) you need out need to use the $apply options and separate each tranformations with a forward slash:  
 `https://api.uktradeinfo.com/ots?$apply=filter(MonthId gt 202000 and CountryId eq 959)/groupby((CommodityId, FlowTypeId), aggregate(Value with sum as SumValue))`
 
 To use this in R you will need to write the query manually and construct it (Nb. all whitespace in the query must be replaced by %20):
@@ -113,5 +113,5 @@ response <- httr::GET(endpoint,
                                  
 # Queries in a browser
 You can enter API queries directly in your browser and see the JSON ouptut, but you will need to write the full request manaully.
-Eg. copy and paste the following into the address bar: 
+Eg. copy and paste the following into the address bar:  
 `https://api.uktradeinfo.com/OTS?MonthId gt 201901 & CountryId eq 959`
